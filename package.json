@@ -4,6 +4,7 @@
 	"description": "Extension that allows to open large files so that other extensions can work with them.",
 	"version": "1.0.1",
 	"license": "CC BY-NC-SA 4.0",
+	"publisher": "mbehr1",
 	"author": {
 		"name": "Matthias Behr",
 		"email": "mbehr+vsclfs@mcbehr.de"

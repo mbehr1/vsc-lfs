@@ -33,6 +33,6 @@ Donations are welcome! (Contact me for commercial use or different [license](htt
 
 ## Release Notes
 
-### 1.0.0
+### 1.0.2
 
 Initial release with read-only and no file change monitoring restriction.
