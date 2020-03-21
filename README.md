@@ -33,6 +33,11 @@ Open an [issue](https://github.com/mbehr1/vsc-lfs/issues) or create a pull reque
 
 Donations are welcome! (Contact me for commercial use or different [license](https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode)).
 
+## Planned features
+
+* support watch for changing files
+* remove readonly restriction
+
 ## Release Notes
 
 ### 1.1.0
