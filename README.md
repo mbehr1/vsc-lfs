@@ -1,5 +1,7 @@
 # Large file (vsc-lfs) README
 
+[![Version](https://vsmarketplacebadge.apphb.com/version/mbehr1.vsc-lfs.svg)](https://marketplace.visualstudio.com/items?itemName=mbehr1.vsc-lfs)
+
 This extensions allows you to (in a sane way) work around the restriction described as vscode issue #27100 and feature request #31078.
 So you can open large files (e.g. a few hundred MBs) and they get passed to the extension host / to your extensions.
 
