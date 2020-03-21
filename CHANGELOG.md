@@ -4,7 +4,8 @@ All notable changes to the "vsc-lfs" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
+## [1.1.0]
 
+- Added telemetry using vscode-extension-telemetry with events: 'activate' and 'open large file' (measurement: fileSize). The telemetry is following the user setting: telemetry.enableTelemetry.
 ## [1.0.2]
 - Initial release

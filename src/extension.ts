@@ -11,10 +11,28 @@
 
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-// todo const TelemetryReporter = require('vscode-extension-telemetry');
+import TelemetryReporter from 'vscode-extension-telemetry';
+
+let reporter: TelemetryReporter;
 
 export function activate(context: vscode.ExtensionContext) {
 	console.log('vsc-lfs.activated. Use "open large file" command to open a large file :-)');
+
+	const extensionId = 'mbehr1.vsc-lfs';
+	const extension = vscode.extensions.getExtension(extensionId);
+
+	if (extension) {
+		const extensionVersion = extension.packageJSON.extensionVersion;
+
+		// the aik is not really sec_ret. but lets avoid bo_ts finding it too easy:
+		const strKE = 'ZjJlMDA4NTQtNmU5NC00ZDVlLTkxNDAtOGFiNmIzNTllODBi';
+		const strK = Buffer.from(strKE, "base64").toString();
+		reporter = new TelemetryReporter(extensionId, extensionVersion, strK);
+		context.subscriptions.push(reporter);
+		reporter?.sendTelemetryEvent('activate');
+	} else {
+		console.log("vsc-lfs: not found as extension!");
+	}
 
 	const lfsP = new LFSProvider();
 	context.subscriptions.push(vscode.workspace.registerFileSystemProvider('lfs', lfsP, { isReadonly: true, isCaseSensitive: true }));
@@ -76,6 +94,7 @@ class LFSProvider implements vscode.FileSystemProvider {
 			if (!curSet.fileBuffer) {
 				throw vscode.FileSystemError.FileNotFound();
 			}
+			reporter?.sendTelemetryEvent('open large file', undefined, { 'fileSize': curSet.fileBuffer.length });
 		}
 
 		if (curSet.limitSize && curSet.fileBuffer && (curSet.fileBuffer.length <= LFSProvider.limitedSize)) {

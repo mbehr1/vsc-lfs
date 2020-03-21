@@ -35,6 +35,11 @@ Donations are welcome! (Contact me for commercial use or different [license](htt
 
 ## Release Notes
 
+### 1.1.0
+
+Added telemetry using vscode-extension-telemetry with events: 'activate' and 'open large file' (measurement: fileSize).
+The telemetry is following the user setting: telemetry.enableTelemetry.
+
 ### 1.0.2
 
 Initial release with read-only and no file change monitoring restriction.

@@ -2,7 +2,7 @@
 	"name": "vsc-lfs",
 	"displayName": "Large file support for extensions",
 	"description": "Extension that allows to open large files so that other extensions can work with them.",
-	"version": "1.0.2",
+	"version": "1.1.0",
 	"license": "CC BY-NC-SA 4.0",
 	"publisher": "mbehr1",
 	"author": {
@@ -54,6 +54,9 @@
 		"watch": "tsc -watch -p ./",
 		"pretest": "npm run compile && npm run lint",
 		"test": "node ./out/test/runTest.js"
+	},
+	"dependencies": {
+		"vscode-extension-telemetry": "^0.1.2"
 	},
 	"devDependencies": {
 		"@types/glob": "^7.1.1",
