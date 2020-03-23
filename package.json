@@ -2,14 +2,17 @@
 	"name": "vsc-lfs",
 	"displayName": "Large file support for extensions",
 	"description": "Extension that allows to open large files so that other extensions can work with them.",
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"license": "CC BY-NC-SA 4.0",
 	"publisher": "mbehr1",
 	"author": {
 		"name": "Matthias Behr",
 		"email": "mbehr+vsclfs@mcbehr.de"
 	},
-	"repository": "github:mbehr1/vsc-lfs",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/mbehr1/vsc-lfs.git"
+	},
 	"engines": {
 		"vscode": "^1.39.0"
 	},
@@ -31,6 +34,11 @@
 			{
 				"title": "Large file (vsc-lfs)",
 				"properties": {
+					"vsc-lfs.reReadTimeout": {
+						"type": "integer",
+						"default": 1000,
+						"description": "Timeout in ms until the first re-read happens."
+					},
 					"vsc-lfs.fileFilters": {
 						"type": [
 							"string"

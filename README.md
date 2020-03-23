@@ -5,7 +5,7 @@
 This extensions allows you to (in a sane way) work around the restriction described as vscode issue #27100 and feature request #31078.
 So you can open large files (e.g. a few hundred MBs) and they get passed to the extension host / to your extensions.
 
-**Note:** Use with care! The authors decided to impose the size restriction for a good reason. Use it only when you do really need it and not for every file. 
+**Note:** Use with care! The vs-code authors decided to impose the size restriction for a good reason. Use it only when you do really need it and not for every file. 
 
 ## Features
 
@@ -40,11 +40,4 @@ Donations are welcome! (Contact me for commercial use or different [license](htt
 
 ## Release Notes
 
-### 1.1.0
-
-Added telemetry using vscode-extension-telemetry with events: 'activate' and 'open large file' (measurement: fileSize).
-The telemetry is following the user setting: telemetry.enableTelemetry.
-
-### 1.0.2
-
-Initial release with read-only and no file change monitoring restriction.
+See [Changelog](./CHANGELOG.md)
