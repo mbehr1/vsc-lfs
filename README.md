@@ -36,6 +36,7 @@ Donations are welcome! (Contact me for commercial use or different [license](htt
 ## Planned features
 
 * support watch for changing files
+* add support for reopen at startup (check renderer1 ENOPRO: No ... found for resource lfs:...)
 * remove readonly restriction
 
 ## Release Notes

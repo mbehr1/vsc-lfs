@@ -56,7 +56,8 @@ export function activate(context: vscode.ExtensionContext) {
 class LFSProvider implements vscode.FileSystemProvider {
 
 	static limitedSize = 1024 * 1024; // limit to 1MB on first read.
-	static reReadTimeout: number = 1000; // 1s
+	static reReadTimeout: number = vscode.workspace.getConfiguration().get<number>('vsc-lfs.reReadTimeout') ?
+		<number>(vscode.workspace.getConfiguration().get<number>('vsc-lfs.reReadTimeout')) : 5000; // 5s default
 	private _uriMap: Map<string, { limitSize: boolean, fileBuffer?: Buffer }> = new Map<string, { limitSize: boolean, fileBuffer?: Buffer }>();
 
 	stat(uri: vscode.Uri): vscode.FileStat {
