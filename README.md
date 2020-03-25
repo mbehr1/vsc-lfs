@@ -20,6 +20,7 @@ Use the command "open large file..." and select the file you want in the followi
 This extension contributes the following settings:
 
 * `vsc-lfs.fileFilters`: Array of strings that contain the file filters to apply for the open large file dialog. Default to ["txt", "TXT", "log", LOG"].
+* `vsc-lfs.reReadTimeout`: Time after which a re-read takes place. If your file doesn't open try to increase this value. Defaults to 5s.
 
 ## Known Issues
 
