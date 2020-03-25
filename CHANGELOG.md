@@ -4,6 +4,9 @@ All notable changes to the "vsc-lfs" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.1.3]
+- add support for automatic reopen at startup
+
 ## [1.1.2]
 - Set default re-read timeout to 5s.
 

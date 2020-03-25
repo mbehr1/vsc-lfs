@@ -36,7 +36,6 @@ Open an [issue](https://github.com/mbehr1/vsc-lfs/issues) or create a pull reque
 ## Planned features
 
 * support watch for changing files
-* add support for reopen at startup (check renderer1 ENOPRO: No ... found for resource lfs:...)
 * remove readonly restriction
 
 ## Release Notes

@@ -2,7 +2,7 @@
 	"name": "vsc-lfs",
 	"displayName": "Large file support for extensions",
 	"description": "Extension that allows to open large files so that other extensions can work with them.",
-	"version": "1.1.2",
+	"version": "1.1.3",
 	"license": "CC BY-NC-SA 4.0",
 	"publisher": "mbehr1",
 	"author": {
@@ -20,6 +20,7 @@
 		"Other"
 	],
 	"activationEvents": [
+		"onFileSystem:lfs",
 		"onCommand:extension.lfsOpenFile"
 	],
 	"main": "./out/extension.js",
