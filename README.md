@@ -9,7 +9,7 @@ So you can open large files (e.g. a few hundred MBs) and they get passed to the 
 
 ## Features
 
-- open large (>5MB) files and still allow your other extensions to process it.
+- open large (>50MB) files and still allow your other extensions to process it.
 
 ## Usage
 
