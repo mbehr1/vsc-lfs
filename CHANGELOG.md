@@ -4,6 +4,9 @@ All notable changes to the "vsc-lfs" extension will be documented in this file.
 
 <!-- Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file. -->
 
+## [1.1.4]
+- fixed a bug with small files returning wrong size on stat.
+
 ## [1.1.3]
 - add support for automatic reopen at startup
 
