@@ -25,19 +25,20 @@ This extension contributes the following settings:
 ## Known Issues
 
 * Currently the files are opened read-only even if they are not from the original filesystem.
-* File changes are not reflected/monitored. You do need to reopen the file to see any changes.
 
 ## Contributions
 
 Any and all test, code or feedback contributions are welcome.
 Open an [issue](https://github.com/mbehr1/vsc-lfs/issues) or create a pull request to make this extension work better for all.
 
-[![Donations](https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2ZNMJP5P43QQN&source=url) are welcome! (Contact me for commercial use or different [license](https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode)).
+[![Donations](https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2ZNMJP5P43QQN&source=url) Donations are welcome! (Contact me for commercial use or different [license](https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode)).
 
 ## Planned features
 
-* support watch for changing files
-* remove readonly restriction
+* Remove readonly restriction.
+* Investigate: seems like file changes are already supported. VS Code seems to understand our uri format and triggers a readFile on file change.
+  Support watch for removing/deleted files.
+* Add debouncing / delayed updates features to limit the amount of file changes reflected to extensions.
 
 ## Release Notes
 
