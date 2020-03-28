@@ -53,10 +53,10 @@ export function activate(context: vscode.ExtensionContext) {
 
 }
 
-class LFSProvider implements vscode.FileSystemProvider {
+export class LFSProvider implements vscode.FileSystemProvider { // export only for test access?
 
-	static limitedSize = 1024 * 1024; // limit to 1MB on first read.
-	static reReadTimeout: number = vscode.workspace.getConfiguration().get<number>('vsc-lfs.reReadTimeout') ?
+	limitedSize: number = 1024 * 1024; // limit to 1MB on first read.
+	reReadTimeout: number = vscode.workspace.getConfiguration().get<number>('vsc-lfs.reReadTimeout') ?
 		<number>(vscode.workspace.getConfiguration().get<number>('vsc-lfs.reReadTimeout')) : 5000; // 5s default
 	private _uriMap: Map<string, { limitSize: boolean, fileBuffer?: Buffer }> = new Map<string, { limitSize: boolean, fileBuffer?: Buffer }>();
 
@@ -72,7 +72,7 @@ class LFSProvider implements vscode.FileSystemProvider {
 		// console.log(`vsc-lfs.stat(uri=${uri.toString()})... fileUri=${fileUri.toString()} _limitSize=${limitSize}`);
 
 		const realStat = fs.statSync(uri.fsPath);
-		let fileStat: vscode.FileStat = { ctime: realStat.ctime.valueOf(), mtime: realStat.mtime.valueOf(), size: limitSize ? LFSProvider.limitedSize : realStat.size, type: realStat.isFile ? (vscode.FileType.File) : (realStat.isDirectory ? vscode.FileType.Directory : vscode.FileType.Unknown) };
+		let fileStat: vscode.FileStat = { ctime: realStat.ctime.valueOf(), mtime: realStat.mtime.valueOf(), size: (limitSize && realStat.size > this.limitedSize) ? this.limitedSize : realStat.size, type: realStat.isFile ? (vscode.FileType.File) : (realStat.isDirectory ? vscode.FileType.Directory : vscode.FileType.Unknown) };
 		// console.log(` stat returning size=${fileStat.size}/${realStat.size}`);
 		return fileStat;
 	}
@@ -98,7 +98,7 @@ class LFSProvider implements vscode.FileSystemProvider {
 			reporter?.sendTelemetryEvent('open large file', undefined, { 'fileSize': curSet.fileBuffer.length });
 		}
 
-		if (curSet.limitSize && curSet.fileBuffer && (curSet.fileBuffer.length <= LFSProvider.limitedSize)) {
+		if (curSet.limitSize && curSet.fileBuffer && (curSet.fileBuffer.length <= this.limitedSize)) {
 			// the file is already smaller than our limit
 			curSet.limitSize = false;
 		}
@@ -112,9 +112,9 @@ class LFSProvider implements vscode.FileSystemProvider {
 					this._uriMap.set(fileUri.toString(), curSet);
 				}
 				this._emitter.fire([{ type: vscode.FileChangeType.Changed, uri: uri }]);
-			}, LFSProvider.reReadTimeout);
+			}, this.reReadTimeout);
 
-			return curSet.fileBuffer.slice(0, 0 + LFSProvider.limitedSize);
+			return curSet.fileBuffer.slice(0, 0 + this.limitedSize);
 		} else {
 			let toRet = curSet.fileBuffer;
 			curSet.fileBuffer = undefined;
