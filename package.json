@@ -2,7 +2,7 @@
 	"name": "vsc-lfs",
 	"displayName": "Large file support for extensions",
 	"description": "Extension that allows to open large files so that other extensions can work with them.",
-	"version": "1.1.4",
+	"version": "1.1.5",
 	"license": "CC BY-NC-SA 4.0",
 	"publisher": "mbehr1",
 	"author": {

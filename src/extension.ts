@@ -72,7 +72,7 @@ export class LFSProvider implements vscode.FileSystemProvider { // export only f
 		// console.log(`vsc-lfs.stat(uri=${uri.toString()})... fileUri=${fileUri.toString()} _limitSize=${limitSize}`);
 
 		const realStat = fs.statSync(uri.fsPath);
-		let fileStat: vscode.FileStat = { ctime: realStat.ctime.valueOf(), mtime: realStat.mtime.valueOf(), size: (limitSize && realStat.size > this.limitedSize) ? this.limitedSize : realStat.size, type: realStat.isFile ? (vscode.FileType.File) : (realStat.isDirectory ? vscode.FileType.Directory : vscode.FileType.Unknown) };
+		let fileStat: vscode.FileStat = { ctime: realStat.ctime.valueOf(), mtime: realStat.mtime.valueOf(), size: (limitSize && realStat.size > this.limitedSize) ? this.limitedSize : realStat.size, type: realStat.isFile() ? (vscode.FileType.File) : (realStat.isDirectory() ? vscode.FileType.Directory : vscode.FileType.Unknown) };
 		// console.log(` stat returning size=${fileStat.size}/${realStat.size}`);
 		return fileStat;
 	}
