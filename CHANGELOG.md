@@ -6,6 +6,7 @@ All notable changes to the "vsc-lfs" extension will be documented in this file.
 
 ## [1.2.0]
 - changed watch dispose behaviour to reduce number of re-loads on changing active document.
+- implemented readDirectory so that breadcrumb navigation is working.
 
 ## [1.1.5]
 - fixed a bug with wrongly detected directories as files.

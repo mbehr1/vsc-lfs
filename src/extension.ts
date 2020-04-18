@@ -63,6 +63,8 @@ export class LFSProvider implements vscode.FileSystemProvider { // export only f
 	limitedSize: number = 1024 * 1024; // limit to 1MB on first read.
 	reReadTimeout: number = vscode.workspace.getConfiguration().get<number>('vsc-lfs.reReadTimeout') ?
 		<number>(vscode.workspace.getConfiguration().get<number>('vsc-lfs.reReadTimeout')) : 5000; // 5s default
+	private _fileFilters: string[] = <Array<string>>(vscode.workspace.getConfiguration().get("vsc-lfs.fileFilters"));
+
 	private _uriMap: Map<string, { limitSize: boolean, fileBuffer?: Buffer }> = new Map<string, { limitSize: boolean, fileBuffer?: Buffer }>();
 
 	markLimitSize(uri: vscode.Uri, limitSize = true) {
@@ -171,7 +173,29 @@ export class LFSProvider implements vscode.FileSystemProvider { // export only f
 
 	readDirectory(uri: vscode.Uri): [string, vscode.FileType][] {
 		console.log(`vsc-lfs.readDirectory(uri=${uri.toString()}...`);
-		return [];
+		let entries: [string, vscode.FileType][] = [];
+		// list all dirs and files matching our filter:
+		const dirEnts = fs.readdirSync(uri.fsPath, { withFileTypes: true });
+		for (var i = 0; i < dirEnts.length; ++i) {
+			// console.log(` vsc-lfs.readDirectory found ${dirEnts[i].name}`);
+			if (dirEnts[i].isDirectory()) {
+				entries.push([dirEnts[i].name, vscode.FileType.Directory]);
+			} else {
+				if (dirEnts[i].isFile()) {
+					let matchesFilter = this._fileFilters.length > 0 ? false : true;
+					for (let j = 0; j < this._fileFilters.length; ++j) {
+						if (dirEnts[i].name.endsWith(this._fileFilters[j])) {
+							matchesFilter = true;
+							break;
+						}
+					}
+					if (matchesFilter) {
+						entries.push([dirEnts[i].name, vscode.FileType.File]);
+					}
+				}
+			}
+		}
+		return entries;
 	}
 
 	writeFile(uri: vscode.Uri, content: Uint8Array, options: { create: boolean, overwrite: boolean }): void {
