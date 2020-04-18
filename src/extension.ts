@@ -44,11 +44,16 @@ export function activate(context: vscode.ExtensionContext) {
 					uris.forEach((uri) => {
 						console.log(`open large file got URI=${uri.toString()}`);
 						let lfsUri = uri.with({ scheme: 'lfs' });
+						lfsP.markLimitSize(lfsUri);
 						vscode.workspace.openTextDocument(lfsUri).then((value) => { vscode.window.showTextDocument(value, { preview: false }); });
 					});
 				}
 			}
 		);
+	}));
+
+	context.subscriptions.push(vscode.workspace.onDidCloseTextDocument((doc) => {
+		lfsP.onDidCloseTextDocument(doc.uri);
 	}));
 
 }
@@ -60,36 +65,48 @@ export class LFSProvider implements vscode.FileSystemProvider { // export only f
 		<number>(vscode.workspace.getConfiguration().get<number>('vsc-lfs.reReadTimeout')) : 5000; // 5s default
 	private _uriMap: Map<string, { limitSize: boolean, fileBuffer?: Buffer }> = new Map<string, { limitSize: boolean, fileBuffer?: Buffer }>();
 
-	stat(uri: vscode.Uri): vscode.FileStat {
-		const fileUri = uri.with({ scheme: 'file' });
+	markLimitSize(uri: vscode.Uri, limitSize = true) {
+		if (!this._uriMap.has(uri.toString())) {
+			console.log(`vsc-lfs.markLimitSize(uri=${uri.toString()})... limitSize=${limitSize}`);
+			this._uriMap.set(uri.toString(), { limitSize: limitSize });
+		} else {
+			let curSet = this._uriMap.get(uri.toString());
+			if (curSet) {
+				curSet.limitSize = limitSize;
+				this._uriMap.set(uri.toString(), curSet);
+			}
+		}
+	}
 
-		if (!this._uriMap.has(fileUri.toString())) {
-			this._uriMap.set(fileUri.toString(), { limitSize: true });
+	stat(uri: vscode.Uri): vscode.FileStat {
+
+		if (!this._uriMap.has(uri.toString())) {
+			this._uriMap.set(uri.toString(), { limitSize: true });
 		}
 
-		const limitSize = this._uriMap.get(fileUri.toString())?.limitSize;
+		const limitSize = this._uriMap.get(uri.toString())?.limitSize;
 
-		// console.log(`vsc-lfs.stat(uri=${uri.toString()})... fileUri=${fileUri.toString()} _limitSize=${limitSize}`);
-
-		const realStat = fs.statSync(uri.fsPath);
+		// console.log(`vsc-lfs.stat(uri=${uri.toString()})... _limitSize=${limitSize}`);
+		const fileUri = uri.with({ scheme: 'file' });
+		const realStat = fs.statSync(fileUri.fsPath);
 		let fileStat: vscode.FileStat = { ctime: realStat.ctime.valueOf(), mtime: realStat.mtime.valueOf(), size: (limitSize && realStat.size > this.limitedSize) ? this.limitedSize : realStat.size, type: realStat.isFile() ? (vscode.FileType.File) : (realStat.isDirectory() ? vscode.FileType.Directory : vscode.FileType.Unknown) };
 		// console.log(` stat returning size=${fileStat.size}/${realStat.size}`);
 		return fileStat;
 	}
 
 	readFile(uri: vscode.Uri): Uint8Array {
-		const fileUri = uri.with({ scheme: 'file' });
-		if (!this._uriMap.has(fileUri.toString())) {
-			this._uriMap.set(fileUri.toString(), { limitSize: true });
+		if (!this._uriMap.has(uri.toString())) {
+			this._uriMap.set(uri.toString(), { limitSize: true });
 		}
-		let curSet = this._uriMap.get(fileUri.toString());
+		let curSet = this._uriMap.get(uri.toString());
 		if (!curSet) {
 			throw vscode.FileSystemError.Unavailable();
 		}
 
-		console.log(`vsc-lfs.readFile(uri=${uri.toString()})...fileUri=${fileUri.toString()} _limitSize=${curSet.limitSize}`);
+		console.log(`vsc-lfs.readFile(uri=${uri.toString()})... _limitSize=${curSet.limitSize}`);
 
 		if (!curSet.fileBuffer) {
+			const fileUri = uri.with({ scheme: 'file' });
 			console.log(` largeFile reading ${fileUri.fsPath}`);
 			curSet.fileBuffer = fs.readFileSync(fileUri.fsPath);
 			if (!curSet.fileBuffer) {
@@ -106,10 +123,10 @@ export class LFSProvider implements vscode.FileSystemProvider { // export only f
 		if (curSet.limitSize) {
 			setTimeout(() => {
 				//console.log(` readFile triggering re-read...`);
-				let curSet = this._uriMap.get(fileUri.toString());
+				let curSet = this._uriMap.get(uri.toString());
 				if (curSet) {
 					curSet.limitSize = false;
-					this._uriMap.set(fileUri.toString(), curSet);
+					this._uriMap.set(uri.toString(), curSet);
 				}
 				this._emitter.fire([{ type: vscode.FileChangeType.Changed, uri: uri }]);
 			}, this.reReadTimeout);
@@ -129,15 +146,27 @@ export class LFSProvider implements vscode.FileSystemProvider { // export only f
 		console.log(`vsc-lfs.watch(uri=${uri.toString()}...`);
 		return new vscode.Disposable(() => {
 			console.log(`vsc-lfs.watch.Dispose ${uri}`);
-			const fileUri = uri.with({ scheme: 'file' });
-			let curSet = this._uriMap.get(fileUri.toString());
+			let curSet = this._uriMap.get(uri.toString());
 			if (curSet) {
-				// we could delete the key as well
-				curSet.limitSize = true;
+				// on changing to a different editor the watch dispose is called already.
+				// let's try to optimize that.
+				// we don't delete the key here as we don't know whether the file is still open.
+				//curSet.limitSize = true;
 				curSet.fileBuffer = undefined;
-				this._uriMap.set(fileUri.toString(), curSet);
+				this._uriMap.set(uri.toString(), curSet);
 			}
 		});
+	}
+
+	onDidCloseTextDocument(uri: vscode.Uri) {
+		// console.log(`vsc-lfs onDidCloseTextDocument(${uri.toString()})...`);
+		let curSet = this._uriMap.get(uri.toString());
+		if (curSet) {
+			console.log(` onDidCloseTextDocument(${uri.toString()}) closing internally.`);
+			curSet.limitSize = true;
+			curSet.fileBuffer = undefined;
+			this._uriMap.set(uri.toString(), curSet);
+		}
 	}
 
 	readDirectory(uri: vscode.Uri): [string, vscode.FileType][] {

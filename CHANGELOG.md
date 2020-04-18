@@ -4,6 +4,9 @@ All notable changes to the "vsc-lfs" extension will be documented in this file.
 
 <!-- Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file. -->
 
+## [1.2.0]
+- changed watch dispose behaviour to reduce number of re-loads on changing active document.
+
 ## [1.1.5]
 - fixed a bug with wrongly detected directories as files.
 
