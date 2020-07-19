@@ -2,8 +2,8 @@
 	"name": "vsc-lfs",
 	"displayName": "Large file support for extensions",
 	"description": "Extension that allows to open large files so that other extensions can work with them.",
-	"version": "1.2.0",
-	"license": "CC BY-NC-SA 4.0",
+	"version": "1.2.1",
+	"license": "CC-BY-NC-SA-4.0",
 	"publisher": "mbehr1",
 	"author": {
 		"name": "Matthias Behr",
@@ -65,19 +65,19 @@
 		"test": "node ./out/test/runTest.js"
 	},
 	"dependencies": {
-		"vscode-extension-telemetry": "^0.1.2"
+		"vscode-extension-telemetry": "^0.1.6"
 	},
 	"devDependencies": {
-		"@types/glob": "^7.1.1",
+		"@types/glob": "^7.1.3",
 		"@types/mocha": "^7.0.1",
-		"@types/node": "^12.11.7",
-		"@types/vscode": "^1.39.0",
-		"eslint": "^6.8.0",
-		"@typescript-eslint/parser": "^2.18.0",
-		"@typescript-eslint/eslint-plugin": "^2.18.0",
+		"@types/node": "^12.12.50",
+		"@types/vscode": "1.39.0",
+		"@typescript-eslint/eslint-plugin": "^3.6.1",
+		"@typescript-eslint/parser": "^3.2.0",
+		"eslint": "^7.5.0",
 		"glob": "^7.1.6",
-		"mocha": "^7.0.1",
-		"typescript": "^3.7.5",
-		"vscode-test": "^1.3.0"
+		"mocha": "^7.2.0",
+		"typescript": "^3.9.7",
+		"vscode-test": "^1.4.0"
 	}
 }
