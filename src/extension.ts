@@ -38,6 +38,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.workspace.registerFileSystemProvider('lfs', lfsP, { isReadonly: true, isCaseSensitive: true }));
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.lfsOpenFile', async () => {
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		return vscode.window.showOpenDialog({ canSelectFiles: true, canSelectFolders: false, canSelectMany: false, filters: { 'Large files': <Array<string>>(vscode.workspace.getConfiguration().get("vsc-lfs.fileFilters")) }, openLabel: 'Select large file to open...' }).then(
 			async (uris: vscode.Uri[] | undefined) => {
 				if (uris) {
