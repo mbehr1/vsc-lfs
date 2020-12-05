@@ -40,7 +40,7 @@ This extension contributes the following settings:
 {
   "name": "delete all debug lines",
   "filters": [
-    "search": "^.*[DEBUG].*$", // full line with [DEBUG]
+    "search": "^.*\\[DEBUG\\].*$", // full line with [DEBUG]. [ ] need to be escaped in reg exp.
     "replace": "" // replace with empty line
   ]
 }]

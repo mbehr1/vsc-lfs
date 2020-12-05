@@ -4,6 +4,9 @@ All notable changes to the "vsc-lfs" extension will be documented in this file.
 
 <!-- Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file. -->
 
+## [1.3.1]
+- updated README example
+
 ## [1.3.0]
 - added *replacements* configuration option for search/replace feature to shrink the file content on loading. This can be used to e.g. replace unneeded content in large files before loading.
 
