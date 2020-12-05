@@ -12,6 +12,8 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import TelemetryReporter from 'vscode-extension-telemetry';
+import { createInterface } from 'readline';
+const { once } = require('events');
 
 let reporter: TelemetryReporter;
 
@@ -34,7 +36,7 @@ export function activate(context: vscode.ExtensionContext) {
 		console.log("vsc-lfs: not found as extension!");
 	}
 
-	const lfsP = new LFSProvider();
+	const lfsP = new LFSProvider(context.globalState);
 	context.subscriptions.push(vscode.workspace.registerFileSystemProvider('lfs', lfsP, { isReadonly: true, isCaseSensitive: true }));
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.lfsOpenFile', async () => {
@@ -42,10 +44,32 @@ export function activate(context: vscode.ExtensionContext) {
 		return vscode.window.showOpenDialog({ canSelectFiles: true, canSelectFolders: false, canSelectMany: false, filters: { 'Large files': <Array<string>>(vscode.workspace.getConfiguration().get("vsc-lfs.fileFilters")) }, openLabel: 'Select large file to open...' }).then(
 			async (uris: vscode.Uri[] | undefined) => {
 				if (uris) {
-					uris.forEach((uri) => {
-						console.log(`open large file got URI=${uri.toString()}`);
+					uris.forEach(async (uri) => {
+						const fileStat = fs.statSync(uri.fsPath);
+						console.log(`open large file with size=${fileStat.size} from URI=${uri.toString()}`);
 						let lfsUri = uri.with({ scheme: 'lfs' });
-						lfsP.markLimitSize(lfsUri);
+
+						// any replacements defined?
+						// if so ask user to select. todo add autoApplyIf option
+						const regexs: { search: string, replace: string }[] = [];
+						const replacements = <Array<{ name: string, filters: any[] }> | undefined>(vscode.workspace.getConfiguration().get("vsc-lfs.replacements"));
+						if (replacements?.length) {
+							interface ReplacementQuickPick {
+								label: string,
+								picked?: boolean,
+								data: { name: string, filters: any[] }
+							}
+							const selected = await vscode.window.showQuickPick<ReplacementQuickPick>(replacements.map(r => { return { label: r.name, data: r }; }), { canPickMany: true });
+							if (selected && selected.length) {
+								//console.log(` selected='${JSON.stringify(selected)}'`);
+								for (const sel of selected) {
+									sel.data.filters.forEach((f) => {
+										regexs.push(f);
+									});
+								}
+							}
+						}
+						lfsP.markLimitSize(lfsUri, true, regexs);
 						vscode.workspace.openTextDocument(lfsUri).then((value) => { vscode.window.showTextDocument(value, { preview: false }); });
 					});
 				}
@@ -66,26 +90,85 @@ export class LFSProvider implements vscode.FileSystemProvider { // export only f
 		<number>(vscode.workspace.getConfiguration().get<number>('vsc-lfs.reReadTimeout')) : 5000; // 5s default
 	private _fileFilters: string[] = <Array<string>>(vscode.workspace.getConfiguration().get("vsc-lfs.fileFilters"));
 
-	private _uriMap: Map<string, { limitSize: boolean, fileBuffer?: Buffer }> = new Map<string, { limitSize: boolean, fileBuffer?: Buffer }>();
+	private _uriMap: Map<string, { limitSize: boolean, fileBuffer?: Buffer, filters?: { search: string, replace: string }[] }> = new Map<string, { limitSize: boolean, fileBuffer?: Buffer, filters?: { search: string, replace: string }[] }>();
 
-	markLimitSize(uri: vscode.Uri, limitSize = true) {
+	constructor(private storage?: vscode.Memento) {
+
+	}
+
+	markLimitSize(uri: vscode.Uri, limitSize = true, filters?: { search: string, replace: string }[]) {
+		this.storage?.update(`filters_${uri.toString()}`, filters);
 		if (!this._uriMap.has(uri.toString())) {
 			console.log(`vsc-lfs.markLimitSize(uri=${uri.toString()})... limitSize=${limitSize}`);
-			this._uriMap.set(uri.toString(), { limitSize: limitSize });
+			this._uriMap.set(uri.toString(), { limitSize: limitSize, filters: filters });
 		} else {
 			let curSet = this._uriMap.get(uri.toString());
 			if (curSet) {
 				curSet.limitSize = limitSize;
+				curSet.filters = filters;
 				this._uriMap.set(uri.toString(), curSet);
 			}
 		}
 	}
 
+	/**
+	 * read a file line by line and apply replaces per line
+	 * filters are only allowed to shrink the file!
+	 * @param fsPath filepath of the file to read
+	 * @param filters array of search/replace to be applied per line
+	 * @returns Buffer with the full replaced file content 
+	 */
+	async readWithFilters(fsPath: string, filtersJson: { search: string, replace: string }[]): Promise<Buffer | undefined> {
+		try {
+			const fileStat = fs.statSync(fsPath);
+			const buf = Buffer.allocUnsafe(fileStat.size);
+			let bufUsed = 0;
+			const filters = filtersJson.map(f => { return { search: new RegExp(f.search, 'g'), replace: f.replace }; });
+			const filtersLen = filters.length;
+			try {
+				const rl = createInterface({
+					input: fs.createReadStream(fsPath),
+					crlfDelay: Infinity
+				});
+
+				rl.on('line', (line) => {
+					// we keep empty lines as empty:
+					if (!line.length) {
+						bufUsed += buf.write('\n', bufUsed); // todo detect \r\n? 
+						return;
+					}
+					// check each search regExp:
+					for (let i = 0; i < filtersLen; ++i) {
+						line = line.replace(filters[i].search, filters[i].replace);
+						// todo check whether it's faster to always replace line or 
+						// e.g. match first and then replace.
+					}
+					if (line.length) {
+						if (bufUsed) {
+							bufUsed += buf.write('\n', bufUsed); // todo detect \r\n? 
+						}
+						bufUsed += buf.write(line, bufUsed);
+					}
+				});
+				await once(rl, 'close');
+			}
+			catch (err) {
+				console.error(`readWithFilters got inner err='${err}'`);
+			}
+			return buf.slice(0, bufUsed);
+		}
+		catch (err) {
+			console.error(`readWithFilters got outer err='${err}'`);
+		}
+		return undefined;
+	}
+
 	stat(uri: vscode.Uri): vscode.FileStat {
 
 		if (!this._uriMap.has(uri.toString())) {
-			this._uriMap.set(uri.toString(), { limitSize: true });
+			this._uriMap.set(uri.toString(), { limitSize: true, filters: this.storage?.get(`filters_${uri.toString()}`) });
 		}
+		// todo do we have to return here the size of the filtered content?
 
 		const limitSize = this._uriMap.get(uri.toString())?.limitSize;
 
@@ -97,25 +180,30 @@ export class LFSProvider implements vscode.FileSystemProvider { // export only f
 		return fileStat;
 	}
 
-	readFile(uri: vscode.Uri): Uint8Array {
+	async readFile(uri: vscode.Uri): Promise<Uint8Array> {
 		if (!this._uriMap.has(uri.toString())) {
-			this._uriMap.set(uri.toString(), { limitSize: true });
+			this._uriMap.set(uri.toString(), { limitSize: true, filters: this.storage?.get(`filters_${uri.toString()}`) });
 		}
 		let curSet = this._uriMap.get(uri.toString());
 		if (!curSet) {
 			throw vscode.FileSystemError.Unavailable();
 		}
 
-		console.log(`vsc-lfs.readFile(uri=${uri.toString()})... _limitSize=${curSet.limitSize}`);
+		console.log(`vsc-lfs.readFile(uri=${uri.toString()})... _limitSize=${curSet.limitSize} filters=${JSON.stringify(curSet.filters)}`);
 
 		if (!curSet.fileBuffer) {
 			const fileUri = uri.with({ scheme: 'file' });
-			console.log(` largeFile reading ${fileUri.fsPath}`);
-			curSet.fileBuffer = fs.readFileSync(fileUri.fsPath);
+			if (curSet.filters === undefined || curSet.filters.length === 0) {
+				console.log(` largeFile reading ${fileUri.fsPath} without filters`);
+				curSet.fileBuffer = fs.readFileSync(fileUri.fsPath);
+			} else {
+				// reading with filters
+				curSet.fileBuffer = await this.readWithFilters(fileUri.fsPath, curSet.filters);
+			}
 			if (!curSet.fileBuffer) {
 				throw vscode.FileSystemError.FileNotFound();
 			}
-			reporter?.sendTelemetryEvent('open large file', undefined, { 'fileSize': curSet.fileBuffer.length });
+			reporter?.sendTelemetryEvent('open large file', undefined, { 'fileSize': curSet.fileBuffer.length, 'filters': curSet.filters?.length || 0 });
 		}
 
 		if (curSet.limitSize && curSet.fileBuffer && (curSet.fileBuffer.length <= this.limitedSize)) {

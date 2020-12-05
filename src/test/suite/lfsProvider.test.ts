@@ -11,7 +11,7 @@ function sleep(ms: number): Promise<void> {
 
 suite('LFSProvider class Test Suite', () => {
     vscode.window.showInformationMessage('Start all LFSProvider class tests');
-    let lfsP: myExtension.LFSProvider = new myExtension.LFSProvider();
+    let lfsP: myExtension.LFSProvider = new myExtension.LFSProvider(undefined);
     lfsP.limitedSize = 10;
     lfsP.reReadTimeout = 50; // 0.05s for test
 
@@ -22,12 +22,12 @@ suite('LFSProvider class Test Suite', () => {
         assert.equal(10, lfsP.stat(smallFileUri).size);
         // next ones as well until readFile happens
         assert.equal(10, lfsP.stat(smallFileUri).size);
-        assert.equal(10, lfsP.readFile(smallFileUri).length);
+        assert.equal(10, (await lfsP.readFile(smallFileUri)).length);
         // wait for reread...
         await sleep(60);
         // now full size:
         assert.equal(60, lfsP.stat(smallFileUri).size);
-        assert.equal(60, lfsP.readFile(smallFileUri).length);
+        assert.equal(60, (await lfsP.readFile(smallFileUri)).length);
     });
 
     test('access not existing file', () => {

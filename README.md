@@ -10,6 +10,7 @@ So you can open large files (e.g. a few hundred MBs) and they get passed to the 
 ## Features
 
 - open large (>50MB) files and still allow your other extensions to process it.
+- replacement features allows to search and replace file content at opening. See below for setting `vsc-lfs.replacements`.
 
 ## Usage
 
@@ -21,6 +22,32 @@ This extension contributes the following settings:
 
 * `vsc-lfs.fileFilters`: Array of strings that contain the file filters to apply for the open large file dialog. Default to ["txt", "TXT", "log", LOG"].
 * `vsc-lfs.reReadTimeout`: Time after which a re-read takes place. If your file doesn't open try to increase this value. Defaults to 5s.
+* `vsc-lfs.replacements`: Optional array of objects with name and filters property. Filters is a array of objects with search and replace properties. If replacements are defined at *open large file...* command you can select any of the replacements. The selected ones will be applied as search and replace line-by-line. Search and replace must not increase the file size but the intention is to shrink the file. search is a javascript regular expression and replace can contain special replacement patterns like *$&* or *$n*. For details see [Specifying a string as a parameter](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_string_as_a_parameter) E.g.
+```
+[{
+  "name": "shorten line and date",
+  "filters": [
+    {
+      "search": "line: (\\d*)$", // regex to search lines ending with 'line: <number>'. Capturing the number.
+      "replace": "l:$1" // replace with l:<number>
+    },
+    { // replace all ' date:' with ' d:'
+      "search": " date:",
+      "replace": " d:"
+    }
+  ]
+},
+{
+  "name": "delete all debug lines",
+  "filters": [
+    "search": "^.*[DEBUG].*$", // full line with [DEBUG]
+    "replace": "" // replace with empty line
+  ]
+}]
+```
+**Note:**  take care to escape \ properly in json as \\\\.
+
+**Note:**  currently the search/replace is applied line by line.
 
 ## Known Issues
 
@@ -35,6 +62,7 @@ Open an [issue](https://github.com/mbehr1/vsc-lfs/issues) or create a pull reque
 
 ## Planned features
 
+* Add *autoApplyIf* option to replacements for e.g. above a certain file size or file name patterns.
 * Remove readonly restriction.
 * Investigate: seems like file changes are already supported. VS Code seems to understand our uri format and triggers a readFile on file change.
   Support watch for removing/deleted files.
