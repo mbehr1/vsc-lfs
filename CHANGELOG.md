@@ -7,6 +7,9 @@
 
 * **changelog:** changelogs not updated ([a010dcb](https://github.com/mbehr1/vsc-lfs/commit/a010dcb5fd73cd6ef9ef025f689e65b7b24371e8))
 
+### [1.3.3]
+* **CI/build:** add automatic generation of vsix package.
+
 ### [1.3.2](https://github.com/mbehr1/vsc-lfs/compare/v1.3.1...v1.3.2) (2020-12-27)
 
 
