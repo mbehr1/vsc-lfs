@@ -1,3 +1,11 @@
+# Change Log for 'vsc-lfs':
+
+### [1.3.2](https://github.com/mbehr1/vsc-lfs/compare/v1.3.1...v1.3.2) (2020-12-27)
+
+
+### Bug Fixes
+
+* **copyright:** update copyright for 2021 ([7352d79](https://github.com/mbehr1/vsc-lfs/commit/7352d7908cee19e66afee78f1190bf3d7a7d57d5))
 
 ### [1.3.1]
 - updated README example
