@@ -132,7 +132,13 @@
 		"plugins": [
 			"@semantic-release/commit-analyzer",
 			"@semantic-release/release-notes-generator",
-			"@semantic-release/changelog",
+			[
+				"@semantic-release/changelog",
+				{
+					"changelogFile": "CHANGELOG.md",
+					"changelogTitle": "# Change Log for 'vsc-lfs':"
+				}
+			],
 			[
 				"@semantic-release/npm",
 				{
