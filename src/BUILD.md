@@ -1,5 +1,16 @@
 # Build details
 
+## Local builds
+
+To locally build you do need:
+... todo
+
+## Creating a PR
+
+... todo
+
+## CI setup
+
 I describe the setup here that is used to build and release version.
 The target is to do that automated in CI.
 
@@ -8,7 +19,7 @@ The following steps are done:
   - autogenerate changelog (via semantic-release)
   - automatically define the version (via semantic-release)
 
-## Commit message rules
+### Commit message rules
 
 The [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) are used as rules.
 
@@ -60,7 +71,7 @@ jobs:
       - uses: wagoid/commitlint-github-action@v2
 ```
 
-## Semantic release
+### Semantic release
 
 Semantic-release is used to
  - determine the next semantic version based on the commit messages and last version tag
