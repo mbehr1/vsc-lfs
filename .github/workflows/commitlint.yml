@@ -1,6 +1,10 @@
 name: Lint Commit Messages
-on: [push, pull_request]
-
+on:
+  push:
+    # release.yml workflow does it already there.
+    branches-ignore:
+      - master
+  pull_request:
 jobs:
   commitlint:
     runs-on: ubuntu-latest
