@@ -1,5 +1,5 @@
 /* --------------------
- * Copyright (C) Matthias Behr, 2020
+ * Copyright (C) Matthias Behr, 2020 - 2021
  * 
  * This extension provides a temporary solution until vscode issue #27100, feature request #31078
  * is changed/implemented.
