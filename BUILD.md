@@ -99,35 +99,35 @@ npm install --save-dev semantic-release-vsce
 and configured in package.json via:
 ```json
 "release": {
-		"branches": [
-			"master"
-		],
-		"plugins": [
+    "branches": [
+      "master"
+    ],
+    "plugins": [
             [
-				"@semantic-release/commit-analyzer",
-				{
-					"releaseRules": [
-						{
-							"type": "docs",
-							"scope": "readme",
-							"release": "patch"
-						}
-					]
-				}
-			],
+        "@semantic-release/commit-analyzer",
+        {
+          "releaseRules": [
+            {
+              "type": "docs",
+              "scope": "readme",
+              "release": "patch"
+            }
+          ]
+        }
+      ],
             "@semantic-release/release-notes-generator",
-			[
-				"@semantic-release/changelog",
-				{
-					"changelogFile": "CHANGELOG.md",
-					"changelogTitle": "# Change Log for 'vsc-lfs':"
-				}
-			],
-			[
-				"@semantic-release/npm",
-				{
-					"npmPublish": false
-				}
+      [
+        "@semantic-release/changelog",
+        {
+          "changelogFile": "CHANGELOG.md",
+          "changelogTitle": "# Change Log for 'vsc-lfs':"
+        }
+      ],
+      [
+        "@semantic-release/npm",
+        {
+          "npmPublish": false
+        }
             ],
             [
                 "semantic-release-vsce",
@@ -135,26 +135,26 @@ and configured in package.json via:
                     "packageVsix": "vsc-lfs.vsix"
                 }
             ],
-			[
-				"@semantic-release/github",
-				{
-					"assets": [
-						{
-							"path": "vsc-lfs.vsix",
-							"label": "vsc-lfs Visual Studio Code extension package"
-						}
-					]
-				}
-			],
-			[
-				"@semantic-release/git",
-				{
-					"message": "chore(release): ${nextRelease.version} [skip ci]"
-				}
-			]
-		],
-		"preset": "conventionalcommits"
-	}
+      [
+        "@semantic-release/github",
+        {
+          "assets": [
+            {
+              "path": "vsc-lfs.vsix",
+              "label": "vsc-lfs Visual Studio Code extension package"
+            }
+          ]
+        }
+      ],
+      [
+        "@semantic-release/git",
+        {
+          "message": "chore(release): ${nextRelease.version} [skip ci]"
+        }
+      ]
+    ],
+    "preset": "conventionalcommits"
+  }
 ```
 
 In addition to the conventional-commits rule a commit of type ```'docs'``` and scope ```'readme'``` triggers a patch release as well.
