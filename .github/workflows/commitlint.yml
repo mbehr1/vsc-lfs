@@ -4,6 +4,7 @@ on:
     # release.yml workflow does it already there.
     branches-ignore:
       - master
+      - gh-pages
   pull_request:
 jobs:
   commitlint:
