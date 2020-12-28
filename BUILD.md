@@ -2,7 +2,7 @@
 
 ## Local builds
 
-To locally build you do need:
+To build locally you do need:
 
 once:
 ```
@@ -24,17 +24,18 @@ Please use branch name "feature/..." or "feat/..." for features and "fix/..." fo
 
 ## CI setup
 
-I describe the setup here that is used to build and release version.
-The target is to do that automated in CI.
+I describe the setup here that is used to build and release versions.
+The releases are generated automatically in CI.
 
 The following steps are done:
 - enforce commit message rules to be able to
   - autogenerate changelog (via semantic-release)
   - automatically define the version (via semantic-release)
+- on push to master branch: generate and publish a new release.
 
 ### Commit message rules
 
-The [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) are used as rules.
+The [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) rules are used.
 
 commitlint is used:
 ```sh
@@ -73,6 +74,7 @@ on:
     # release.yml workflow does it already there.
     branches-ignore:
       - master
+      - gh-pages
   pull_request:
 jobs:
   commitlint:
@@ -103,7 +105,7 @@ and configured in package.json via:
       "master"
     ],
     "plugins": [
-            [
+      [
         "@semantic-release/commit-analyzer",
         {
           "releaseRules": [
@@ -115,7 +117,7 @@ and configured in package.json via:
           ]
         }
       ],
-            "@semantic-release/release-notes-generator",
+      "@semantic-release/release-notes-generator",
       [
         "@semantic-release/changelog",
         {
@@ -205,4 +207,4 @@ jobs:
           VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
         run: npx semantic-release
 ```
-This needs a ```VSCE_TOKEN``` secret be setup in github/repo/settings/secrets.
+This needs a ```VSCE_TOKEN``` secret defined in github/repo/settings/secrets.
