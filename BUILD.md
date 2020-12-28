@@ -3,11 +3,24 @@
 ## Local builds
 
 To locally build you do need:
-... todo
+
+once:
+```
+(have at least nodejs >=12 installed)
+npm install -g typescript
+npm install -g vsce
+npm install
+````
+then
+```
+vsce package
+```
+and you can install your own generated package (vsc-lfs...vsix).
 
 ## Creating a PR
 
-... todo
+After testing your changes locally you can simply create a PR the usual github way.
+Please use branch name "feature/..." or "feat/..." for features and "fix/..." for fixes.
 
 ## CI setup
 
