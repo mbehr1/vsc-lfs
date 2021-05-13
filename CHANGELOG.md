@@ -1,5 +1,12 @@
 # Change Log for 'vsc-lfs':
 
+## [1.4.0](https://github.com/mbehr1/vsc-lfs/compare/v1.3.6...v1.4.0) (2021-05-13)
+
+
+### Features
+
+* limit support of untrusted workspaces ([14f71c8](https://github.com/mbehr1/vsc-lfs/commit/14f71c89cb29ea314cb9ee32af7cb371737ac96d))
+
 ### [1.3.6](https://github.com/mbehr1/vsc-lfs/compare/v1.3.5...v1.3.6) (2021-02-06)
 
 
