@@ -26,6 +26,15 @@
 		"onFileSystem:lfs",
 		"onCommand:extension.lfsOpenFile"
 	],
+	"capabilities": {
+		"untrustedWorkspaces": {
+			"supported": "limited",
+			"description": "replacements regex could be used in a malicious way",
+			"restrictedConfigurations": [
+				"vsc-lfs.replacements"
+			]
+		}
+	},
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
