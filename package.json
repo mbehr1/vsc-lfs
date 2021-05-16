@@ -53,9 +53,10 @@
 						"description": "Timeout in ms until the first re-read happens."
 					},
 					"vsc-lfs.fileFilters": {
-						"type": [
-							"string"
-						],
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
 						"default": [
 							"txt",
 							"TXT",
