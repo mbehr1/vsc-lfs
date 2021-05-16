@@ -1,5 +1,12 @@
 # Change Log for 'vsc-lfs':
 
+### [1.4.1](https://github.com/mbehr1/vsc-lfs/compare/v1.4.0...v1.4.1) (2021-05-16)
+
+
+### Bug Fixes
+
+* fileFilters not declared as array of strings ([e833205](https://github.com/mbehr1/vsc-lfs/commit/e833205238598f557cc6eba0e069bcf3fff14078))
+
 ## [1.4.0](https://github.com/mbehr1/vsc-lfs/compare/v1.3.6...v1.4.0) (2021-05-13)
 
 
